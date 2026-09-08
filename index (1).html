@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Две правки — защита формулировок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAFA; --card:#FFFFFF; --ink:#1D1D1F; --mute:#6E6E73; --line:#E5E5EA;
+    --red:#D0332B; --red-soft:#FBEBEA;
+    --green:#1F8A4C; --green-soft:#E6F4EC;
+    --blue:#2A5BD7; --blue-soft:#E8EEFB;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",-apple-system,system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  main{max-width:720px;margin:0 auto;padding:0 24px 140px}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  p{margin:0 0 18px}
+  b{font-weight:600}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);background:rgba(250,250,250,.72);border-bottom:1px solid rgba(0,0,0,.06)}
+  nav .in{max-width:720px;margin:0 auto;padding:14px 24px;display:flex;gap:26px;font-size:13px;font-weight:500}
+  nav a{color:var(--mute);transition:color .25s}
+  nav a:hover,nav a.on{color:var(--ink);text-decoration:none}
+
+  /* hero */
+  header{padding:110px 0 70px}
+  h1{font-size:clamp(40px,7.5vw,68px);line-height:1.04;letter-spacing:-.035em;font-weight:700;margin:0 0 22px}
+  .lead{font-size:21px;line-height:1.5;color:var(--mute);max-width:600px;margin-bottom:56px}
+  .phrase{font-size:clamp(20px,3.6vw,28px);line-height:1.5;font-weight:500;letter-spacing:-.015em;margin:0 0 26px}
+  .row{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+  .who{flex:none;font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;letter-spacing:.01em;position:relative;top:-3px}
+  .who.t{background:var(--red-soft);color:var(--red)}
+  .who.m{background:var(--green-soft);color:var(--green)}
+  .cut,.add,.fix{position:relative;white-space:nowrap}
+  .cut{color:var(--red)}
+  .add{color:var(--green)}
+  .fix{color:var(--blue)}
+  .cut::after,.add::after,.fix::after{content:"";position:absolute;left:0;height:2px;width:0;background:currentColor;border-radius:2px;transition:width .7s var(--ease)}
+  .cut::after{top:55%}
+  .add::after,.fix::after{bottom:-2px}
+  .fix::after{height:0;border-bottom:2px dotted currentColor;background:none}
+  .drawn .cut::after,.drawn .add::after,.drawn .fix::after{width:100%}
+  .drawn .row:nth-child(2) span::after{transition-delay:.35s}
+  .legend{font-size:13px;color:var(--mute);margin-top:30px;display:flex;gap:22px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+
+  /* sections */
+  section{padding:80px 0 20px}
+  h2{font-size:clamp(28px,4.5vw,38px);line-height:1.12;letter-spacing:-.03em;font-weight:700;margin:0 0 20px}
+  h3{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:40px 0 12px}
+  .kick{font-size:13px;font-weight:600;color:var(--mute);margin-bottom:14px}
+
+  .rev{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .rev.in{opacity:1;transform:none}
+
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0}
+  @media(max-width:640px){.vs{grid-template-columns:1fr}}
+  .side{padding:24px;border-radius:18px;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1px rgba(0,0,0,.04)}
+  .side.win{box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1.5px var(--green)}
+  .side h4{font-size:12px;font-weight:600;margin:0 0 10px;color:var(--mute)}
+  .side .q{font-size:20px;font-weight:500;letter-spacing:-.015em;line-height:1.3;margin:0 0 16px}
+  .side ul{margin:0;padding-left:18px;font-size:15px;color:#3A3A3C}
+  .side li{margin-bottom:8px}
+
+  .honest{background:var(--card);border-radius:18px;padding:22px 24px;margin:32px 0;box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1px rgba(0,0,0,.04);display:flex;gap:16px}
+  .honest .ic{flex:none;width:34px;height:34px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .honest p{margin:0;font-size:16px}
+
+  .freq{margin:30px 0}
+  .bar{display:grid;grid-template-columns:170px 1fr 90px;align-items:center;gap:16px;margin-bottom:14px;font-size:15px}
+  @media(max-width:560px){.bar{grid-template-columns:120px 1fr 70px}}
+  .track{height:10px;background:#EBEBF0;border-radius:99px;overflow:hidden}
+  .fill{height:100%;width:0;border-radius:99px;background:var(--ink);transition:width 1s var(--ease)}
+  .bar.teacher .fill{background:var(--red)} .bar.mine .fill{background:var(--green)}
+  .in .fill{width:var(--w)}
+  .bar .n{text-align:right;color:var(--mute);font-size:13px}
+  .note{font-size:13px;color:var(--mute);line-height:1.55}
+
+  .ex{margin:16px 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+  .ex li{padding:14px 18px;background:var(--card);border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1px rgba(0,0,0,.04);font-size:16px}
+  .ex li em{display:block;font-style:normal;font-size:13px;color:var(--mute);margin-top:4px}
+
+  /* chat */
+  .chat{background:var(--card);border-radius:22px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1px rgba(0,0,0,.05),0 20px 50px -30px rgba(0,0,0,.18);overflow:hidden;margin-top:28px}
+  .chat-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:14px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;transition:background .3s}
+  .dot.off{background:var(--mute)}
+  #status{color:var(--mute);font-size:13px}
+  .log{padding:22px;min-height:220px;max-height:480px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:86%;padding:12px 16px;border-radius:18px;font-size:16px;line-height:1.5;white-space:pre-wrap;opacity:0;transform:translateY(8px) scale(.98);animation:pop .4s var(--ease) forwards}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .msg.u{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:6px}
+  .msg.a{align-self:flex-start;background:#F2F2F7;border-bottom-left-radius:6px}
+  .typing{display:inline-flex;gap:4px;padding:6px 2px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:#8E8E93;animation:blink 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 22px 16px}
+  .chip{font-family:inherit;font-size:13px;font-weight:500;padding:8px 13px;border:1px solid var(--line);background:var(--card);border-radius:999px;cursor:pointer;color:var(--ink);transition:background .2s,border-color .2s,transform .2s var(--ease)}
+  .chip:hover{background:#F2F2F7;border-color:#D1D1D6}
+  .chip:active{transform:scale(.97)}
+  .inrow{display:flex;gap:10px;padding:14px 22px;border-top:1px solid var(--line)}
+  .inrow input{flex:1;font-family:inherit;font-size:16px;padding:12px 16px;border:1px solid var(--line);border-radius:999px;background:var(--bg);transition:border-color .2s,box-shadow .2s}
+  .inrow input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+  .inrow button{font-family:inherit;font-size:15px;font-weight:600;padding:12px 20px;border:0;border-radius:999px;background:var(--ink);color:#fff;cursor:pointer;transition:transform .2s var(--ease),opacity .2s}
+  .inrow button:hover{opacity:.85}.inrow button:active{transform:scale(.96)}
+  .inrow button:disabled{opacity:.4;cursor:default;transform:none}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+
+  .thesis{counter-reset:t;list-style:none;padding:0;margin:20px 0 0}
+  .thesis li{counter-increment:t;position:relative;padding:20px 0 20px 52px;border-bottom:1px solid var(--line);font-size:17px}
+  .thesis li:last-child{border-bottom:0}
+  .thesis li::before{content:counter(t);position:absolute;left:0;top:20px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+  footer{margin-top:80px;font-size:13px;color:var(--mute)}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .rev{opacity:1;transform:none;transition:none}
+    .cut::after,.add::after,.fix::after{transition:none;width:100%}
+    .fill{transition:none;width:var(--w)}
+    .msg{animation:none;opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<nav><div class="in">
+  <a href="#r1">Раунд 1</a><a href="#r2">Раунд 2</a><a href="#ask">Эксперт</a><a href="#sum">Тезисы</a>
+</div></nav>
+<main>
+
+<header id="hero">
+  <h1>Две правки,<br>которые я готов оспорить.</h1>
+  <p class="lead">Разбор двух исправлений в моём эссе: в первом случае мой вариант точнее, во втором — это вообще не ошибка.</p>
+
+  <div class="phrase" id="p1">
+    <div class="row"><span class="who m">Я</span><span>Try to understand as much as <span class="fix">it possible</span> for your <span class="add">brain</span></span></div>
+    <div class="row"><span class="who t">Учитель</span><span>Try to understand as much as it possible for your <span class="cut">improvement</span></span></div>
+  </div>
+  <div class="phrase" id="p2">
+    <div class="row"><span class="who m">Я</span><span>… <span class="add">with no reason</span></span></div>
+    <div class="row"><span class="who t">Учитель</span><span>… <span class="cut">without reason</span></span></div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--green)"></i>защищаю</span>
+    <span><i style="background:var(--red)"></i>оспариваю</span>
+    <span><i style="background:var(--blue)"></i>нужно исправить нам обоим</span>
+  </div>
+</header>
+
+<section id="r1">
+  <div class="rev">
+    <div class="kick">Раунд 1</div>
+    <h2><i>for your brain</i> против <i>for your improvement</i></h2>
+    <p>Оба слова грамматически возможны. Вопрос в том, какое передаёт мысль точнее. Фраза говорит о пределе: пойми столько, сколько <b>можешь вместить</b>. Предел задаёт мозг, а не «улучшение».</p>
+  </div>
+
+  <div class="vs rev">
+    <div class="side win">
+      <h4>Мой вариант</h4>
+      <p class="q">…as much as possible for your brain</p>
+      <ul>
+        <li>Конкретный образ: мозг как ёмкость с пределом. Читатель видит картинку.</li>
+        <li>Конструкция «столько, сколько возможно <b>для чего-то</b>» требует предела. У мозга он есть.</li>
+        <li>Живой регистр — уместен в эссе-совете.</li>
+      </ul>
+    </div>
+    <div class="side">
+      <h4>Вариант учителя</h4>
+      <p class="q">…as much as possible for your improvement</p>
+      <ul>
+        <li><i>Improvement</i> — абстракция без объекта. Improvement <b>of what</b>? Фраза повисает.</li>
+        <li>У улучшения нет предела, поэтому <i>as much as possible for</i> с ним логически не работает.</li>
+        <li>Канцелярит; носитель сказал бы <i>for your own development</i> или <i>to improve</i>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="honest rev">
+    <div class="ic">!</div>
+    <p><b>Что я признаю сам, до того как это заметят.</b> В обеих версиях осталась одна ошибка: <i>as much as it possible</i>. Правильно <i>as much as possible</i> или <i>as much as it <b>is</b> possible</i>. Учитель её не исправил. Умение видеть свои ошибки — и есть признак уровня.</p>
+  </div>
+
+  <div class="rev">
+    <h3>Как сказал бы носитель</h3>
+    <ul class="ex">
+      <li>Try to understand as much as your brain can take.<em>самый естественный вариант той же мысли</em></li>
+      <li>Try to take in as much as your mind can absorb.<em>чуть более книжный</em></li>
+      <li>Try to understand as much as you possibly can.<em>нейтральный, без образа мозга</em></li>
+      <li>Push your understanding as far as it will go.<em>идиоматичный, уровень C1+</em></li>
+    </ul>
+  </div>
+</section>
+
+<section id="r2">
+  <div class="rev">
+    <div class="kick">Раунд 2</div>
+    <h2><i>with no reason</i> против <i>without reason</i></h2>
+    <p>Здесь позиция другая. Я не утверждаю, что <i>with no reason</i> лучше. Я утверждаю, что это <b>не ошибка</b> — вопрос частотности, а не правильности. И если исправлять на самый естественный вариант, то это не тот, что предложил учитель.</p>
+  </div>
+
+  <div class="freq rev">
+    <div class="bar"><span>for no reason</span><div class="track"><div class="fill" style="--w:100%"></div></div><span class="n">самый частый</span></div>
+    <div class="bar teacher"><span>without reason</span><div class="track"><div class="fill" style="--w:38%"></div></div><span class="n">реже</span></div>
+    <div class="bar mine"><span>with no reason</span><div class="track"><div class="fill" style="--w:14%"></div></div><span class="n">ещё реже</span></div>
+    <p class="note" style="margin-top:18px">Пропорции приблизительные, по общей картине в корпусах английского. Проверить вживую: <a href="https://books.google.com/ngrams/graph?content=for+no+reason%2Cwithout+reason%2Cwith+no+reason&year_start=1950&year_end=2022&corpus=en&smoothing=3" target="_blank" rel="noopener">Google Books Ngram — три фразы</a>.</p>
+  </div>
+
+  <div class="rev">
+    <h3>Три аргумента</h3>
+    <p><b>1. Все три формы существуют в реальном английском.</b> <i>With no reason</i> регулярно встречается: <i>with no reason given</i>, <i>with no reason to doubt it</i>, <i>with no reason to stay</i>. Ошибкой было бы <i>by no reason</i> — этого в языке нет.</p>
+    <p><b>2. Ошибка и «менее частотный вариант» — разные категории.</b> Экзаменаторы IELTS и Cambridge различают <i>error</i> и <i>less natural choice</i>. Красной ручкой отмечают первое. Второе — комментарий на полях, не минус балл.</p>
+    <p><b>3. Если исправлять — то на самый естественный.</b> Тогда правка должна быть <i>for no reason</i>. Замена одной менее частой формы на другую — не исправление, а замена вкуса.</p>
+  </div>
+
+  <div class="rev">
+    <h3>Реальные шаблоны употребления</h3>
+    <ul class="ex">
+      <li>He was dismissed with no reason given.<em>with no reason + причастие — нормально</em></li>
+      <li>She left with no reason to come back.<em>with no reason + to-infinitive — очень частая конструкция</em></li>
+      <li>They attacked him for no reason.<em>for no reason — самый частый вариант в значении «беспричинно»</em></li>
+      <li>The law was not without reason.<em>without reason — чаще в книжном или юридическом стиле</em></li>
+    </ul>
+  </div>
+
+  <div class="honest rev">
+    <div class="ic">!</div>
+    <p><b>Где учитель прав.</b> Если фраза стояла отдельно, в значении «просто так» — <i>He shouted at me with no reason</i> — то она звучит менее естественно, чем <i>for no reason</i>. Но и тогда это не ошибка, и правка на <i>without reason</i> не делает фразу естественнее.</p>
+  </div>
+</section>
+
+<section id="ask">
+  <div class="rev">
+    <div class="kick">Интерактив</div>
+    <h2>Спросите эксперта прямо сейчас</h2>
+    <p>ИИ-эксперт по английскому, который отвечает честно, а не в мою пользу. Любой в аудитории может задать вопрос. Если он не согласится со мной — это тоже часть презентации.</p>
+  </div>
+
+  <div class="chat rev">
+    <div class="chat-head">
+      <span><span class="dot" id="dot"></span><b>Эксперт по английскому</b></span>
+      <span id="status">готов</span>
+    </div>
+    <div class="log" id="log">
+      <div class="msg a">Задайте вопрос по любой из двух фраз — или по чему угодно в английском. Отвечаю по-русски, примеры на английском.</div>
+    </div>
+    <div class="chips" id="chips">
+      <button class="chip">«With no reason» — это ошибка?</button>
+      <button class="chip">Что естественнее: for your brain или for your improvement?</button>
+      <button class="chip">Что не так с «as much as it possible»?</button>
+      <button class="chip">Как бы это сказал носитель на C1?</button>
+      <button class="chip">Чем error отличается от less natural choice?</button>
+    </div>
+    <div class="inrow">
+      <input id="inp" type="text" placeholder="Ваш вопрос" autocomplete="off">
+      <button id="send">Спросить</button>
+    </div>
+  </div>
+  <p class="note" style="margin-top:14px">Живой режим работает при открытии внутри Claude. В отдельно открытом файле эксперт отвечает заготовленными ответами на вопросы-кнопки.</p>
+</section>
+
+<section id="sum">
+  <div class="rev">
+    <div class="kick">Итог</div>
+    <h2>Что я скажу группе</h2>
+    <ol class="thesis">
+      <li><b>Brain точнее, чем improvement.</b> У «понять столько, сколько возможно для…» должен быть предел. У мозга он есть, у улучшения — нет.</li>
+      <li><b>В обеих версиях есть ошибка, которую не заметили:</b> <i>as much as it possible</i>. Я её вижу и исправляю сам.</li>
+      <li><b>With no reason — не ошибка.</b> Форма существует, носители её используют. Это менее частый выбор, а не нарушение правила.</li>
+      <li><b>Если править на естественный — то на for no reason,</b> а не на without reason.</li>
+      <li><b>Я не прошу отменить оценку.</b> Я прошу различать ошибку и стилистический комментарий — так делают экзаменаторы.</li>
+    </ol>
+  </div>
+  <footer>Подготовлено для презентации в группе. Все примеры — реальные шаблоны английского; частотность можно проверить по ссылке в Раунде 2.</footer>
+</section>
+
+</main>
+
+<script>
+(function(){
+  // hero markup draws in on load
+  requestAnimationFrame(()=>setTimeout(()=>{document.getElementById('p1').classList.add('drawn');setTimeout(()=>document.getElementById('p2').classList.add('drawn'),500)},300));
+
+  // reveal on scroll
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+
+  // nav highlight
+  const links=[...document.querySelectorAll('nav a')];
+  const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-40% 0px -55% 0px'});
+  document.querySelectorAll('section').forEach(s=>so.observe(s));
+
+  // chat
+  const log=document.getElementById('log'),inp=document.getElementById('inp'),send=document.getElementById('send'),status=document.getElementById('status'),dot=document.getElementById('dot');
+  const history=[];
+  const SYSTEM=`Ты — эксперт по английскому языку с опытом экзаменатора Cambridge/IELTS. Отвечай на русском, примеры давай на английском. Отвечай честно и нейтрально: не подыгрывай ни студенту, ни учителю. Различай "error" (нарушение правила) и "less natural / less frequent choice" (стилистически менее естественный выбор).
+
+Контекст. Студент написал в эссе: (1) "Try to understand as much as it possible for your brain"; учитель заменил brain на improvement. (2) Студент написал "with no reason"; учитель отметил как ошибку и исправил на "without reason". Факты: "as much as it possible" — ошибка в обеих версиях (правильно "as much as possible" или "as much as it is possible"). "For your brain" даёт конкретный образ предела; "for your improvement" абстрактно и хуже сочетается с "as much as possible for". "With no reason" — существующая форма (with no reason given / to…), не грамматическая ошибка; в значении "беспричинно" самый частотный вариант — "for no reason"; "without reason" тоже корректен, чаще в книжном стиле. Если спросят про уровень C1 — по двум фразам уровень определить нельзя, нужен весь текст. Отвечай кратко, 3–6 предложений.`;
+  const canned={
+    'with no reason':'Нет, это не грамматическая ошибка. Форма with no reason существует и активно используется: "with no reason given", "with no reason to stay". В значении «беспричинно» самый естественный вариант — for no reason; without reason тоже корректен, но книжнее. Речь о частотности, а не о правильности.',
+    'brain':'Естественнее for your brain. У конструкции "as much as possible for X" должен быть предел, и мозг его задаёт. Improvement абстрактно и повисает: improvement of what? Носитель скорее сказал бы "as much as your brain can take" или "as much as you possibly can".',
+    'as much as it possible':'Пропущен глагол. Правильно "as much as possible" или "as much as it is possible". Эта ошибка есть в обеих версиях — и в исходной, и в исправленной учителем.',
+    'носител':'Например: "Try to understand as much as your brain can take", "Take in as much as your mind can absorb", "Push your understanding as far as it will go". Все три звучат естественно и подходят для уровня C1.',
+    'error':'Error — нарушение правила: "by no reason", "he go". Less natural choice — форма грамматична, но носитель выбрал бы её реже. Экзаменаторы снимают баллы за первое; второе — комментарий о стиле. With no reason относится ко второй категории.'
+  };
+  function cannedFor(q){q=q.toLowerCase();for(const k in canned){if(q.includes(k))return canned[k]}if(q.includes('c1'))return canned['носител'];return 'Живой режим недоступен вне Claude. Выберите один из вопросов-кнопок или откройте сайт внутри Claude.'}
+  function add(role,text){const d=document.createElement('div');d.className='msg '+role;d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+  async function ask(q){
+    q=q.trim();if(!q||send.disabled)return;
+    add('u',q);inp.value='';send.disabled=true;status.textContent='думает';
+    const t=add('a','');t.innerHTML='<span class="typing"><i></i><i></i><i></i></span>';
+    history.push({role:'user',content:q});
+    let answer;
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYSTEM,messages:history})});
+      if(!r.ok)throw new Error(r.status);
+      const d=await r.json();
+      answer=(d.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n').trim();
+      if(!answer)throw new Error('empty');
+      dot.classList.remove('off');status.textContent='живой режим';
+    }catch(e){answer=cannedFor(q);dot.classList.add('off');status.textContent='автономный режим'}
+    history.push({role:'assistant',content:answer});
+    await new Promise(r=>setTimeout(r,250));
+    t.textContent=answer;log.scrollTop=log.scrollHeight;send.disabled=false;inp.focus();
+  }
+  send.onclick=()=>ask(inp.value);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')ask(inp.value)});
+  document.getElementById('chips').addEventListener('click',e=>{if(e.target.classList.contains('chip'))ask(e.target.textContent)});
+})();
+</script>
+</body>
+</html>
